@@ -187,6 +187,9 @@ def rebuild_tree(doctype, parent_field):
 	# get all roots
 	right = 1
 	table = DocType(doctype)
+	doc = frappe.get_doc({"doctype": doctype})
+	if hasattr(doc, "nsm_parent_field"):
+                parent_field = doc.nsm_parent_field
 	column = getattr(table, parent_field)
 	result = (
 		frappe.qb.from_(table)

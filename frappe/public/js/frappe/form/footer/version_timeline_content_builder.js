@@ -90,7 +90,7 @@ function get_version_timeline_content(version_doc, frm) {
 		data.row_changed.every(function (row) {
 			row[3].every(function (p) {
 				var df =
-					frm.fields_dict[row[0]] &&
+					frm.fields_dict[row[0]] && frm.fields_dict[row[0]].grid &&
 					frappe.meta.get_docfield(
 						frm.fields_dict[row[0]].grid.doctype,
 						p[0],

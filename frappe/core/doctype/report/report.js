@@ -1,11 +1,11 @@
 frappe.ui.form.on("Report", {
 	refresh: function (frm) {
-		if (frm.doc.is_standard === "Yes" && !frappe.boot.developer_mode) {
+		//if (frm.doc.is_standard === "Yes" && !frappe.boot.developer_mode) {
 			// make the document read-only
-			frm.disable_form();
-		} else {
+		//	frm.disable_form();
+		//} else {
 			frm.enable_save();
-		}
+		//}
 
 		let doc = frm.doc;
 		frm.add_custom_button(

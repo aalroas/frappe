@@ -658,7 +658,7 @@ class File(Document):
 
 		self.add_comment_in_reference_doc(
 			"Attachment",
-			_("Added {0}").format(f"<a href='{file_url}' target='_blank'>{file_name}</a>{icon}"),
+			_("Added {0}{1}").format(file_name, icon),
 		)
 
 	def add_comment_in_reference_doc(self, comment_type, text):

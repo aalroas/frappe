@@ -282,11 +282,11 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 	make_new_doc() {
 		const doctype = this.doctype;
 		const options = {};
-		this.filter_area.get().forEach((f) => {
-			if (f[2] === "=" && frappe.model.is_non_std_field(f[1])) {
-				options[f[1]] = f[3];
-			}
-		});
+		//this.filter_area.get().forEach((f) => {
+			//if (f[2] === "=" && frappe.model.is_non_std_field(f[1])) {
+				//options[f[1]] = f[3];
+			//}
+		//});
 		frappe.new_doc(doctype, options);
 	}
 
@@ -629,7 +629,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			<input class="level-item list-check-all" type="checkbox"
 				title="${__("Select All")}">
 			<span class="level-item list-liked-by-me hidden-xs">
-				<span title="${__("Likes")}">${frappe.utils.icon("heart", "sm", "like-icon")}</span>
+				<span title="${__("Likes")}">${frappe.utils.icon("star", "sm", "like-icon")}</span>
 			</span>
 			<span class="level-item">${__(subject_field.label)}</span>
 		`;
@@ -964,7 +964,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 		const div = document.createElement("div");
 		div.innerHTML = `
 			<span class="like-action ${heart_class}">
-				${frappe.utils.icon("heart", "sm", "like-icon")}
+				${frappe.utils.icon("star", "sm", "like-icon")}
 			</span>
 			<span class="likes-count">
 				${liked_by.length > 99 ? __("99") + "+" : __(liked_by.length || "")}
@@ -1650,7 +1650,7 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 			});
 		}
 
-		if (frappe.user.has_role("System Manager")) {
+		if (frappe.user.has_role("System Manager") || frappe.user.has_role("Department Manager Approver")) {
 			if (this.get_view_settings) {
 				items.push(this.get_view_settings());
 			}

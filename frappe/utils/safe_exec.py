@@ -384,12 +384,12 @@ def check_safe_sql_query(query: str, throw: bool = True) -> bool:
 	):
 		return True
 
-	if throw:
-		frappe.throw(
-			_("Query must be of SELECT or read-only WITH type."),
-			title=_("Unsafe SQL query"),
-			exc=frappe.PermissionError,
-		)
+	#if throw:
+	#	frappe.throw(
+	#		_("Query must be of SELECT or read-only WITH type."),
+	#		title=_("Unsafe SQL query"),
+	#		exc=frappe.PermissionError,
+	#	)
 
 	return False
 

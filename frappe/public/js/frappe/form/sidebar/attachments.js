@@ -143,6 +143,23 @@ frappe.ui.form.Attachments = class Attachments {
 				<span>${file_name}</span>
 			</a>`;
 
+		const validDoctypes = ["Purchase Order", "Material Request", "Purchase Invoice", "Sales Invoice", "Sales Order", "Sales Proposal", "Expense Claim", "Employee", "Supplier Quotation"];
+		const isMatchedDoctype = validDoctypes.includes(this.frm.doctype);
+		if (isMatchedDoctype) {
+			var is_owner = attachment.owner == frappe.session.user;
+			if(is_owner != true) {
+				var show_price = false;
+				if(this.frm.doctype == "Employee") {
+					show_price = frappe.user.has_role("HR Manager");
+				} else {
+					show_price = frappe.user.has_role("Show Price");
+				}
+				if (show_price != true) {
+					file_label = `<span>${file_name}</span>`;
+				}
+			}
+		}
+
 		let remove_action = null;
 		if (frappe.model.can_write(this.frm.doctype, this.frm.name)) {
 			remove_action = function (target_id) {

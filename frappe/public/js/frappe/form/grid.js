@@ -104,7 +104,7 @@ export default class Grid {
 						<div class="grid-pagination">
 						</div>
 						<div class="grid-bulk-actions text-right">
-							<button class="grid-download btn btn-xs btn-secondary hidden">
+							<button class="grid-download btn btn-xs btn-secondary">
 								${__("Download")}
 							</button>
 							<button class="grid-upload btn btn-xs btn-secondary hidden">
@@ -477,12 +477,12 @@ export default class Grid {
 					this.wrapper.find(".grid-add-multiple-rows").removeClass("hidden");
 				}
 			}
-		} else if (
-			this.grid_rows.length < this.grid_pagination.page_length &&
-			!this.df.allow_bulk_edit
-		) {
-			this.wrapper.find(".grid-footer").toggle(false);
 		}
+		// else if (
+		// 	this.grid_rows.length < this.grid_pagination.page_length
+		// ) {
+		// 	// this.wrapper.find(".grid-footer").toggle(false);
+		// }
 
 		this.wrapper
 			.find(".grid-add-row, .grid-add-multiple-rows, .grid-upload")
@@ -602,7 +602,7 @@ export default class Grid {
 	get_data_based_on_fieldtype(df, data, value) {
 		let fieldname = df.fieldname;
 		let fieldtype = df.fieldtype;
-		let fieldvalue = data[fieldname];
+		let fieldvalue = __(data[fieldname]);
 
 		if (fieldtype === "Check") {
 			value = frappe.utils.string_to_boolean(value);
@@ -1029,7 +1029,7 @@ export default class Grid {
 
 	setup_allow_bulk_edit() {
 		let me = this;
-		if (this.frm && this.frm.get_docfield(this.df.fieldname).allow_bulk_edit) {
+		if (this.frm) {
 			// download
 			this.setup_download();
 
@@ -1046,19 +1046,40 @@ export default class Grid {
 			$(this.wrapper)
 				.find(".grid-upload")
 				.removeClass("hidden")
-				.on("click", () => {
+				.on("click",async () => {
+					let fieldnames = []
+					const fields = (await frappe.get_meta(this.df.options)).fields;
+					fields.forEach((df) => {
+						if (frappe.model.is_value_type(df.fieldtype)) {
+							fieldnames.push(df.fieldname);
+						}
+					});
 					new frappe.ui.FileUploader({
-						as_dataurl: true,
+						as_dataurl: false,
 						allow_multiple: false,
-						on_success(file) {
-							var data = frappe.utils.csv_to_array(
-								frappe.utils.get_decoded_string(file.dataurl)
-							);
-							// row #2 contains fieldnames;
-							var fieldnames = data[2];
+						async on_success(file) {
+							var idx = 0;
+ 							//check if file is csv or xls
+							var data;
+							if (!file.name.endsWith(".csv")) {
+								var datax = await frappe.call({
+										method: "ekin_erp.ekin_erp.common.convert_excel_to_csv.convert_excel_to_csv_and_return",
+										args: {
+											file: file.file_url,
+										}
+									})
+								data = frappe.utils.csv_to_array(
+									datax.message
+								);
+							} else {
+								idx = 6;
+								data = frappe.utils.csv_to_array(
+									frappe.utils.get_decoded_string(file.dataurl)
+								);
+							}
 							me.frm.clear_table(me.df.fieldname);
 							$.each(data, (i, row) => {
-								if (i > 6) {
+								if (idx > 0) {
 									var blank_row = true;
 									$.each(row, function (ci, value) {
 										if (value) {
@@ -1085,6 +1106,7 @@ export default class Grid {
 										});
 									}
 								}
+								idx++;
 							});
 
 							me.frm.refresh_field(me.df.fieldname);
@@ -1101,30 +1123,30 @@ export default class Grid {
 	}
 
 	setup_download() {
-		let title = this.df.label || frappe.model.unscrub(this.df.fieldname);
+		// let title = this.df.label || frappe.model.unscrub(this.df.fieldname);
 		$(this.wrapper)
 			.find(".grid-download")
 			.removeClass("hidden")
 			.on("click", () => {
 				var data = [];
 				var docfields = [];
-				data.push([__("Bulk Edit {0}", [title])]);
+				// data.push([__("Bulk Edit {0}", [title])]);
 				data.push([]);
 				data.push([]);
-				data.push([]);
-				data.push([__("The CSV format is case sensitive")]);
-				data.push([__("Do not edit headers which are preset in the template")]);
-				data.push(["------"]);
+				// data.push([]);
+				// data.push([__("The CSV format is case sensitive")]);
+				// data.push([__("Do not edit headers which are preset in the template")]);
+				// data.push(["------"]);
 				$.each(frappe.get_meta(this.df.options).fields, (i, df) => {
 					// don't include the read-only field in the template
 					if (frappe.model.is_value_type(df.fieldtype)) {
-						data[1].push(df.label);
-						data[2].push(df.fieldname);
-						let description = (df.description || "") + " ";
-						if (df.fieldtype === "Date") {
-							description += frappe.boot.sysdefaults.date_format;
-						}
-						data[3].push(description);
+						data[0].push(df.label);
+						data[1].push(df.fieldname);
+						// let description = (df.description || "") + " ";
+						// if (df.fieldtype === "Date") {
+						// 	description += frappe.boot.sysdefaults.date_format;
+						// }
+						// data[2].push(description);
 						docfields.push(df);
 					}
 				});
@@ -1132,7 +1154,7 @@ export default class Grid {
 				// add data
 				$.each(this.frm.doc[this.df.fieldname] || [], (i, d) => {
 					var row = [];
-					$.each(data[2], (i, fieldname) => {
+					$.each(data[1], (i, fieldname) => {
 						var value = d[fieldname];
 
 						// format date
@@ -1144,8 +1166,14 @@ export default class Grid {
 					});
 					data.push(row);
 				});
+				data.splice(1, 1); // 2nd parameter means remove one item only
 
-				frappe.tools.downloadify(data, null, title);
+				let get_template_url = 'ekin_erp.ekin_erp.overrides.tools.export_to_excel_from_js';
+				open_url_post(frappe.request.url, {
+					cmd: get_template_url,
+					doc: this.frm.doc.name,
+					data: data,
+				});
 				return false;
 			});
 	}
