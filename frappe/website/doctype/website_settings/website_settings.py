@@ -207,8 +207,6 @@ def get_website_settings(context=None):
 	context.read_only_mode = frappe.flags.read_only
 	context.boot = get_boot_data()
 
-	if "/wiki/" in frappe.request.url:
-		context["head_html"] = None
 	return context
 
 
