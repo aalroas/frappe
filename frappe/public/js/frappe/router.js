@@ -553,7 +553,16 @@ frappe.router = {
 frappe.get_route = () => frappe.router.current_route;
 frappe.get_route_str = () => frappe.router.current_route.join("/");
 frappe.set_route = function () {
-	return frappe.router.set_route.apply(frappe.router, arguments);
+	if(arguments[0] == "query-report") {
+		frappe.db.exists("Report", "Custom " + arguments[1]).then((exists) => {
+			if(exists) {
+				arguments[1] = "Custom " + arguments[1];
+			}
+			return frappe.router.set_route.apply(frappe.router, arguments);
+		});
+	} else {
+		return frappe.router.set_route.apply(frappe.router, arguments);
+	}
 };
 
 frappe.get_prev_route = function () {
