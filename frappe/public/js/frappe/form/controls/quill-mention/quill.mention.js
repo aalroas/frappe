@@ -184,6 +184,23 @@ class Mention {
 		this.quill.insertText(this.mentionCharPos + 1, " ", Quill.sources.API);
 		this.quill.setSelection(this.mentionCharPos + 2, Quill.sources.API);
 		this.hideMentionList();
+		const event = new KeyboardEvent('keydown', {
+			key: 'Tab',
+			code: 'Tab',
+			which: 13,
+			keyCode: 13,
+		});
+		
+		// dispatch the event on some DOM element
+		if ($(`.frappe-control[data-fieldname="benefits"]`)[0].contains(this.mentionContainer)) {
+			$(`.frappe-control[data-fieldname="benefits"]`).find(`.ql-editor`)[0].dispatchEvent(event);
+		} else if($(`.frappe-control[data-fieldname="description"]`)[0].contains(this.mentionContainer)) {
+			$(`.frappe-control[data-fieldname="description"]`).find(`.ql-editor`)[0].dispatchEvent(event);
+		} else if($(`.frappe-control[data-fieldname="revision_reason"]`)[0].contains(this.mentionContainer)) {
+			$(`.frappe-control[data-fieldname="revision_reason"]`).find(`.ql-editor`)[0].dispatchEvent(event);
+		} else if($(`.frappe-control[data-fieldname="reason"]`)[0].contains(this.mentionContainer)) {
+			$(`.frappe-control[data-fieldname="reason"]`).find(`.ql-editor`)[0].dispatchEvent(event);
+		}
 	}
 
 	onItemMouseEnter(e) {
