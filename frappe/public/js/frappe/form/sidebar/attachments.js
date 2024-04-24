@@ -143,7 +143,7 @@ frappe.ui.form.Attachments = class Attachments {
 				<span>${file_name}</span>
 			</a>`;
 
-		const validDoctypes = ["Purchase Order", "Material Request", "Purchase Invoice", "Sales Invoice", "Sales Order", "Sales Proposal", "Expense Claim", "Employee", "Supplier Quotation"];
+		const validDoctypes = ["Purchase Order", "Material Request", "Purchase Invoice", "Sales Invoice", "Sales Order", "Sales Proposal", "Expense Claim", "Employee", "Supplier Quotation", "Item"];
 		const isMatchedDoctype = validDoctypes.includes(this.frm.doctype);
 		if (isMatchedDoctype) {
 			var is_owner = attachment.owner == frappe.session.user;
@@ -151,6 +151,10 @@ frappe.ui.form.Attachments = class Attachments {
 				var show_price = false;
 				if(this.frm.doctype == "Employee") {
 					show_price = frappe.user.has_role("HR Manager");
+				} else if (this.frm.doctype == "Item"){
+					if (frappe.user.has_role("Item Manager") || frappe.user.has_role("Purchase Master Manager") || frappe.user.has_role("Purchase Manager") || frappe.user.has_role("Mechanic Department Manager") || frappe.user.has_role("Electronic Department Manager") || frappe.user.has_role("Electronic Design")) {
+						show_price = true;
+					}
 				} else {
 					show_price = frappe.user.has_role("Show Price");
 				}
