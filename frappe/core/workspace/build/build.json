@@ -333,7 +333,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-05-24 14:47:24.395259",
+ "modified": "2024-05-07 14:08:02.253300",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Build",
@@ -343,8 +343,12 @@
  "public": 1,
  "quick_lists": [],
  "restrict_to_domain": "",
- "roles": [],
- "sequence_id": 16.0,
+ "roles": [
+  {
+   "role": "Super Admin"
+  }
+ ],
+ "sequence_id": 27.0,
  "shortcuts": [
   {
    "color": "Grey",
