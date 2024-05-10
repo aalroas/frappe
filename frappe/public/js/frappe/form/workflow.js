@@ -106,7 +106,33 @@ frappe.ui.form.States = class FormStates {
 						frappe.dom.freeze();
 						me.frm.selected_workflow_action = d.action;
 						me.frm.script_manager.trigger("before_workflow_action").then(() => {
-							frappe
+							if (d.action == "Cancel") {
+								frappe.dom.unfreeze();
+								frappe.confirm(
+									__(
+										"Are you sure you want to Cancel document?",
+										"Attention!"
+									),
+									() => {
+										frappe.dom.freeze();
+										frappe
+											.xcall("frappe.model.workflow.apply_workflow", {
+												doc: me.frm.doc,
+												action: d.action,
+											})
+											.then((doc) => {
+												frappe.model.sync(doc);
+												me.frm.refresh();
+												me.frm.selected_workflow_action = null;
+												me.frm.script_manager.trigger("after_workflow_action");
+											})
+											.finally(() => {
+												frappe.dom.unfreeze();
+											});
+									}
+								);
+							} else {
+								frappe
 								.xcall("frappe.model.workflow.apply_workflow", {
 									doc: me.frm.doc,
 									action: d.action,
@@ -120,6 +146,7 @@ frappe.ui.form.States = class FormStates {
 								.finally(() => {
 									frappe.dom.unfreeze();
 								});
+							}
 						});
 					});
 				}
