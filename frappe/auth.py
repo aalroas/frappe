@@ -88,7 +88,7 @@ class HTTPRequest:
 
 			if frappe.local.session.data.csrf_token != csrf_token:
 				frappe.local.flags.disable_traceback = True
-				frappe.throw(_("Invalid Request"), frappe.CSRFTokenError)
+				frappe.throw(_("Invalid Request, you are logged out? Please, refresh the page."), frappe.CSRFTokenError)
 
 	def set_lang(self):
 		frappe.local.lang = get_language()
