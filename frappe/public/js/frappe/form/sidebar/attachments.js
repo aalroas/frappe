@@ -152,7 +152,8 @@ frappe.ui.form.Attachments = class Attachments {
 				if(this.frm.doctype == "Employee") {
 					show_price = frappe.user.has_role("HR Manager");
 				} else if (this.frm.doctype == "Item"){
-					if (file_name.endsWith(".STEP") || file_name.endsWith(".x_t") || file_name.endsWith(".dwg") || file_name.endsWith(".dxf") || file_name.endsWith(".step") || file_name.endsWith(".X_T") || file_name.endsWith(".DWG") || file_name.endsWith(".DXF")) {
+					file_name_to_lower = file_name.toLowerCase();
+					if (file_name_to_lower.endsWith(".step") || file_name_to_lower.endsWith(".x_t") || file_name_to_lower.endsWith(".dwg") || file_name_to_lower.endsWith(".dxf")) {
 						if (frappe.user.has_role("Quality Department Manager") || frappe.user.has_role("Item Manager") || frappe.user.has_role("Purchase Master Manager") || frappe.user.has_role("Purchase Manager") || frappe.user.has_role("Mechanic Department Manager") || frappe.user.has_role("Electronic Department Manager") || frappe.user.has_role("Electronic Design")) {
 							show_price = true;
 						}
