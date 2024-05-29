@@ -187,16 +187,34 @@ frappe.ui.form.Attachments = class Attachments {
 				return false;
 			};
 		}
+		if (this.frm.doctype == "Item") {
+			this.frm.doc.custom_production_files.forEach((element) => {
+				if (attachment.name == element.file_doctype_name) 
+					file_label = 0;
+			});
+			if (file_label != 0) {
+				const icon = `<a href="/app/file/${fileid}">
+						${frappe.utils.icon(attachment.is_private ? "lock" : "unlock", "sm ml-0")}
+					</a>`;
 
-		const icon = `<a href="/app/file/${fileid}">
-				${frappe.utils.icon(attachment.is_private ? "lock" : "unlock", "sm ml-0")}
-			</a>`;
+				$(`<li class="attachment-row">`)
+					.append(frappe.get_data_pill(file_label, fileid, remove_action, icon))
+					.insertAfter(this.add_attachment_wrapper);
 
-		$(`<li class="attachment-row">`)
-			.append(frappe.get_data_pill(file_label, fileid, remove_action, icon))
-			.insertAfter(this.add_attachment_wrapper);
+				this.parent.find(".explore-btn").toggle(true); // show explore icon button if hidden
+			}
+		}
+		else {
+			const icon = `<a href="/app/file/${fileid}">
+					${frappe.utils.icon(attachment.is_private ? "lock" : "unlock", "sm ml-0")}
+				</a>`;
 
-		this.parent.find(".explore-btn").toggle(true); // show explore icon button if hidden
+			$(`<li class="attachment-row">`)
+				.append(frappe.get_data_pill(file_label, fileid, remove_action, icon))
+				.insertAfter(this.add_attachment_wrapper);
+
+			this.parent.find(".explore-btn").toggle(true); // show explore icon button if hidden
+		}
 	}
 
 	get_file_url(attachment) {
