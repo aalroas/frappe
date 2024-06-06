@@ -180,7 +180,7 @@ frappe.ui.form.on("Customize Form", {
 								fieldtype: "Check",
 								fieldname: "with_permissions",
 								label: __("Export Custom Permissions"),
-								default: 1,
+								default: 0,
 							},
 						],
 						function (data) {
