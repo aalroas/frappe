@@ -192,6 +192,10 @@ frappe.ui.form.Attachments = class Attachments {
 				if (attachment.name == element.file_doctype_name) 
 					file_label = 0;
 			});
+			this.frm.doc.custom_firmware_files.forEach((element) => {
+				if (attachment.name == element.file_doctype_name) 
+					file_label = 0;
+			});
 			if (file_label != 0) {
 				const icon = `<a href="/app/file/${fileid}">
 						${frappe.utils.icon(attachment.is_private ? "lock" : "unlock", "sm ml-0")}
