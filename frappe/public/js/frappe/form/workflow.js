@@ -139,7 +139,7 @@ frappe.ui.form.States = class FormStates {
 									  {
 										fieldtype: "Text",
 										fieldname: "comment",
-										label: __("comment"),
+										label: __("Comment"),
 										reqd: 1,
 									  },
 									],
