@@ -131,6 +131,52 @@ frappe.ui.form.States = class FormStates {
 											});
 									}
 								);
+							} else if (me.frm.doc.doctype == "Sample Items") {
+								frappe.dom.unfreeze();
+								const dialog = new frappe.ui.Dialog({
+									title: __("Comment"),
+									fields: [
+									  {
+										fieldtype: "Text",
+										fieldname: "comment",
+										label: __("comment"),
+										reqd: 1,
+									  },
+									],
+									primary_action_label: __("Submit"),
+									primary_action: function () {
+										const values = dialog.get_values();
+										if (!values) {
+										  return;
+										}
+										frappe.call({
+											method: "frappe.desk.form.utils.add_comment",
+											args: {
+												reference_doctype: "Item",
+												reference_name: me.frm.doc.name,
+												content: __(dialog.get_value("comment")),
+												comment_email: frappe.session.user,
+												comment_by: frappe.session.user_fullname
+											},
+										});
+										frappe
+										.xcall("frappe.model.workflow.apply_workflow", {
+											doc: me.frm.doc,
+											action: d.action,
+										})
+										.then((doc) => {
+											frappe.model.sync(doc);
+											me.frm.refresh();
+											me.frm.selected_workflow_action = null;
+											me.frm.script_manager.trigger("after_workflow_action");
+										})
+										.finally(() => {
+											frappe.dom.unfreeze();
+										});
+										dialog.hide();
+									  },
+									})
+								dialog.show();
 							} else {
 								frappe
 								.xcall("frappe.model.workflow.apply_workflow", {
