@@ -156,7 +156,7 @@
 		padding: 0 var(--padding-xs);
 
 		.result, .no-result, .freeze {
-			min-height: #{"calc(100vh - 284px)"};
+			min-height: #{"auto"};
 		}
 	}
 
