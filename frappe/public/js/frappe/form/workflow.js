@@ -159,6 +159,16 @@ frappe.ui.form.States = class FormStates {
 												comment_by: frappe.session.user_fullname
 											},
 										});
+										frappe.call({
+											method: "frappe.desk.form.utils.add_comment",
+											args: {
+												reference_doctype: "Sample Items",
+												reference_name: me.frm.doc.name,
+												content: __(dialog.get_value("comment")),
+												comment_email: frappe.session.user,
+												comment_by: frappe.session.user_fullname
+											},
+										});
 										frappe
 										.xcall("frappe.model.workflow.apply_workflow", {
 											doc: me.frm.doc,
