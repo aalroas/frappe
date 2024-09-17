@@ -33,6 +33,7 @@ from frappe.utils import (
 	split_emails,
 )
 
+from ekin_erp.ekin_erp.common.make_pdf import make_pdf
 
 class EmailQueue(Document):
 	DOCTYPE = "Email Queue"
@@ -350,9 +351,21 @@ class SendMailContext:
 
 			elif attachment.get("print_format_attachment") == 1:
 				attachment.pop("print_format_attachment", None)
-				print_format_file = frappe.attach_print(**attachment)
-				print_format_file.update({"parent": message_obj})
-				add_attachment(**print_format_file)
+				if(attachment.get("print_format", None)) and attachment.get("print_format") == "Sales Order":
+					fcontent = make_pdf(attachment.get("name"), "Sales Order", get_url(), download=False)
+					attachment.update({"fname": attachment.get("name") + ".pdf", "fcontent": fcontent, "parent": message_obj})
+					attachment.pop("fid", None)
+					attachment.pop("file_url", None)
+					attachment.pop("doctype", None)
+					attachment.pop("print_format", None)
+					attachment.pop("name", None)
+					attachment.pop("print_letterhead", None)
+					attachment.pop("lang", None)
+					add_attachment(**attachment)
+				else:
+					print_format_file = frappe.attach_print(**attachment)
+					print_format_file.update({"parent": message_obj})
+					add_attachment(**print_format_file)
 
 		return safe_encode(message_obj.as_string())
 
