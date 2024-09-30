@@ -591,6 +591,8 @@ class Document(BaseDocument):
 				set_workflow_state_on_action(self, workflow, self._action)
 
 	def validate_set_only_once(self):
+		if self.flags.ignore_set_only_once:
+			return
 		"""Validate that fields are not changed if not in insert"""
 		set_only_once_fields = self.meta.get_set_only_once_fields()
 
