@@ -499,8 +499,9 @@ class Document(BaseDocument):
 
 	def set_user_and_timestamp(self):
 		self._original_modified = self.modified
-		self.modified = now()
-		self.modified_by = frappe.session.user
+		# this modification is done here to sync the timestamp for 3rd party integrations
+		self.modified = self.get('modified') or now()
+		self.modified_by = self.get('modified_by') or frappe.session.user
 
 		# We'd probably want the creation and owner to be set via API
 		# or Data import at some point, that'd have to be handled here
