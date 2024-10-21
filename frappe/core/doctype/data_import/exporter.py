@@ -92,7 +92,11 @@ class Exporter:
 		meta = frappe.get_meta(doctype)
 
 		def is_exportable(df):
-			return df and df.fieldtype not in (display_fieldtypes + no_value_fields)
+			return (
+				df
+				and df.fieldtype not in (display_fieldtypes + no_value_fields)
+				and df.has_permlevel_access_to(fieldname=df.fieldname, df=df, permission_type="read")
+			)
 
 		# add name field
 		name_field = frappe._dict(
