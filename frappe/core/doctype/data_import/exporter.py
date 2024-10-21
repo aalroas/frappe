@@ -57,18 +57,19 @@ class Exporter:
 		]
 
 		meta = frappe.get_meta(self.doctype)
+		perm_levels = meta.get_permlevel_access()
 		exportable_fields = frappe._dict({})
 
 		for key, fieldnames in self.export_fields.items():
 			if key == self.doctype:
 				# parent fields
-				exportable_fields[key] = self.get_exportable_fields(key, fieldnames)
+				exportable_fields[key] = self.get_exportable_fields(key, fieldnames, perm_levels=perm_levels)
 
 			elif key in child_table_fields:
 				# child fields
 				child_df = meta.get_field(key)
 				child_doctype = child_df.options
-				exportable_fields[key] = self.get_exportable_fields(child_doctype, fieldnames)
+				exportable_fields[key] = self.get_exportable_fields(child_doctype, fieldnames, perm_levels=perm_levels)
 
 		return exportable_fields
 
@@ -88,14 +89,17 @@ class Exporter:
 				fields.append(df)
 		return fields
 
-	def get_exportable_fields(self, doctype, fieldnames):
+	def get_exportable_fields(self, doctype, fieldnames, perm_levels=[]):
 		meta = frappe.get_meta(doctype)
+
+		def has_permission(df):
+			return df.permlevel in perm_levels
 
 		def is_exportable(df):
 			return (
 				df
 				and df.fieldtype not in (display_fieldtypes + no_value_fields)
-				and df.has_permlevel_access_to(fieldname=df.fieldname, df=df, permission_type="read")
+				and has_permission(df)
 			)
 
 		# add name field
@@ -116,6 +120,7 @@ class Exporter:
 			fields = [name_field] + fields
 
 		return fields or []
+
 
 	def get_data_to_export(self):
 		frappe.permissions.can_export(self.doctype, raise_exception=True)
